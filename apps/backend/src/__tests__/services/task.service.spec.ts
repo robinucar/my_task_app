@@ -1,8 +1,8 @@
 import * as taskService from '../../services/task.service';
-import prisma from '../../../prisma/client';
+import prisma from '../../client';
 import { TaskStatus } from '@prisma/client';
 
-jest.mock('../../../prisma/client', () => ({
+jest.mock('../../client', () => ({
   task: {
     findMany: jest.fn(),
     findUnique: jest.fn(),

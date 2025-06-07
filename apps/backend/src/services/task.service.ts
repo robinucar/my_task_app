@@ -1,5 +1,6 @@
 import prisma from '../client';
 import { TaskStatus, Task } from '@prisma/client';
+import { sortTasks } from '../utils/sortTask';
 
 /**
  * Input type for creating a task.
@@ -18,15 +19,6 @@ export type CreateTaskInput = {
 export type UpdateTaskInput = Partial<CreateTaskInput>;
 
 /**
- * Defines the custom order for TaskStatus sorting.
- */
-const statusOrder = {
-  PENDING: 1,
-  IN_PROGRESS: 2,
-  COMPLETED: 3,
-} as const;
-
-/**
  * Get all tasks, optionally sorted by due date or status.
  *
  * @param sortBy - The field to sort by ('dueDate' or 'status'). Default is 'dueDate'.
@@ -38,20 +30,7 @@ export const getAllTasks = async (
   sortOrder: 'asc' | 'desc' = 'asc',
 ): Promise<Task[]> => {
   const tasks = await prisma.task.findMany();
-
-  if (sortBy === 'status') {
-    return tasks.sort((a, b) => {
-      const aPriority = statusOrder[a.status];
-      const bPriority = statusOrder[b.status];
-      return sortOrder === 'asc' ? aPriority - bPriority : bPriority - aPriority;
-    });
-  }
-
-  return tasks.sort((a, b) => {
-    const aDate = a.dueDate ? new Date(a.dueDate).getTime() : 0;
-    const bDate = b.dueDate ? new Date(b.dueDate).getTime() : 0;
-    return sortOrder === 'asc' ? aDate - bDate : bDate - aDate;
-  });
+  return sortTasks(tasks, sortBy, sortOrder);
 };
 
 /**

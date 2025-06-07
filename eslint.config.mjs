@@ -1,19 +1,49 @@
-import eslintPluginPrettier from 'eslint-plugin-prettier';
+import nx from '@nx/eslint-plugin';
 
-/** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
+  ...nx.configs['flat/base'],
+  ...nx.configs['flat/typescript'],
+  ...nx.configs['flat/javascript'],
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
-    ignores: ['node_modules', 'dist', 'coverage'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    plugins: {
-      prettier: eslintPluginPrettier,
-    },
+    ignores: [
+      '**/dist',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+      'backend/src/generated/**',
+      'backend/src/generated/**',
+      '**/out-tsc/**',
+    ],
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      'prettier/prettier': 'error',
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          enforceBuildableLibDependency: true,
+          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
+          depConstraints: [
+            {
+              sourceTag: '*',
+              onlyDependOnLibsWithTags: ['*'],
+            },
+          ],
+        },
+      ],
     },
+  },
+  {
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+
+    rules: {},
   },
 ];

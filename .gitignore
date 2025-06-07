@@ -41,3 +41,7 @@ Thumbs.db
 .github/instructions/nx.instructions.md
 
 /generated/prisma
+
+# Ignore all .env files
+.env
+**/.env

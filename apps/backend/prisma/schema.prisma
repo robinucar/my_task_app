@@ -4,12 +4,31 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// Generate Prisma Client inside root node_modules for Nx compatibility
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
+// Connect to PostgreSQL using .env DATABASE_URL
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Task model for the task management app
+model Task {
+  id          String      @id @default(cuid())        // Unique ID using cuid (URL-safe)
+  title       String                                 // Required title
+  description String?     @db.Text                   // Optional description (Text supports longer content)
+  dueDate     DateTime?                              // Optional due date
+  status      TaskStatus  @default(PENDING)          // Enum status (defaults to PENDING)
+  createdAt   DateTime    @default(now())            // Auto-set when record is created
+  updatedAt   DateTime    @updatedAt                 // Auto-update when record is updated
+}
+
+// Enum for valid task statuses
+enum TaskStatus {
+  PENDING       // Not started
+  IN_PROGRESS   // Work in progress
+  COMPLETED     // Done
 }

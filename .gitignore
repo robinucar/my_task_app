@@ -45,3 +45,4 @@ Thumbs.db
 # Ignore all .env files
 .env
 **/.env
+apps/backend/.env

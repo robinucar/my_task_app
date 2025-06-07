@@ -31,3 +31,10 @@ A full-stack task management application built with:
 
 - **Jest** for unit testing
 - **Cypress** for component testing
+
+---
+
+## 📚 Backend Documentation
+
+For backend-specific setup, API reference, and Prisma usage, see:  
+[`apps/backend/docs/README.md`](apps/backend/docs/README.md)

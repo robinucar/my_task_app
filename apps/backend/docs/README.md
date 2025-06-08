@@ -9,6 +9,7 @@ This is the backend service for the **My Task App**, built with **Node.js**, **E
 ```
 apps/backend/
 ├── prisma/ # Prisma schema and migrations
+├── __integration-tests__ # integration tests for CRUD + validation
 ├── src/ # Express server and API routes
 ├── docs/ # Backend documentation
 ├── .env # Local environment variables (not committed)
@@ -88,6 +89,88 @@ npm run prisma:generate
 nx serve backend
 ```
 
+### 5. Run the Backend Unit Tests + Integration Test
+
+```
+nx test backend
+```
+
+## 🧪 Integration Tests
+
+Integration tests verify that the API endpoints work correctly with the database and application logic. These tests are located in:
+
+```
+apps/backend/__integration-tests__/
+```
+
+---
+
+### ✅ What’s Covered
+
+| Endpoint                | Description                       |
+| ----------------------- | --------------------------------- |
+| `POST /api/tasks`       | Create a new task with validation |
+| `GET /api/tasks`        | Retrieve all tasks                |
+| `PUT /api/tasks/:id`    | Update an existing task           |
+| `DELETE /api/tasks/:id` | Delete a task                     |
+
+These tests check both **valid use cases** and **error handling**, such as:
+
+- Required field validation
+- Field length constraints
+- Invalid enum values
+- Missing or malformed data
+- 404 for non-existent resources
+
+---
+
+### Setup integration Tests
+
+#### 1. 🛠️ Create Test Database with Docker
+
+Create a separate PostgreSQL container for test isolation:
+
+```
+docker run --name task-db-test \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=my_task_test \
+  -p 5433:5432 \
+  -d postgres
+```
+
+#### 2. 📁 Setup .env.test File
+
+```
+cp apps/backend/.env.example apps/backend/.env.test
+```
+
+#### 3. Edit the contents of .env.test to include:
+
+```
+DATABASE_URL="postgresql://postgres:password@localhost:5433/my_task_test"
+```
+
+### 🚀 Running Integration Tests
+
+- Use the following script to reset the database and run the tests:
+
+```
+npm run test:integration
+```
+
+This will:
+
+1. Reset and apply migrations to the test DB
+2. Run all \*.integration.ts tests
+
+#### 🔧 Script Breakdown
+
+- test:integration: Orchestrates reset + test run
+- reset:testdb: Forces DB reset using test .env
+- NODE_ENV=test: Activates test-specific behaviors
+- jest.integration.config.ts: Targets integration test files only
+
 ## 📦 Tooling Summary
 
 - Nx for monorepo management
@@ -100,4 +183,4 @@ nx serve backend
 
 - dotenv-cli to manage environment variables
 
-- Jest for tests (setup in progress)
+- Jest + supertest for tests (unit + integration)

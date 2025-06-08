@@ -1,7 +1,6 @@
 import prisma from '../client';
 import { TaskStatus, Task } from '@prisma/client';
 import { sortTasks } from '../utils/sortTask';
-
 /**
  * Input type for creating a task.
  */
@@ -19,20 +18,28 @@ export type CreateTaskInput = {
 export type UpdateTaskInput = Partial<CreateTaskInput>;
 
 /**
- * Get all tasks, optionally sorted by due date or status.
+ * Fetches all tasks from the database and sorts them.
  *
- * @param sortBy - The field to sort by ('dueDate' or 'status'). Default is 'dueDate'.
- * @param sortOrder - The sorting direction ('asc' or 'desc'). Default is 'asc'.
- * @returns A sorted array of tasks.
+ * By default, tasks are sorted by `createdAt` in descending order (newest first).
+ * If `sortBy` is set to `'status'` or `'dueDate'`, sorting is done in memory.
+ *
+ * @param sortBy - The field to sort by: `'status'`, `'dueDate'`, or `'createdAt'` (default: `'createdAt'`)
+ * @param sortOrder - The order direction: `'asc'` or `'desc'` (default: `'desc'`)
+ * @returns Sorted list of tasks
  */
 export const getAllTasks = async (
-  sortBy: 'dueDate' | 'status' = 'dueDate',
-  sortOrder: 'asc' | 'desc' = 'asc',
+  sortBy: 'status' | 'dueDate' | 'createdAt' = 'createdAt',
+  sortOrder: 'asc' | 'desc' = 'desc',
 ): Promise<Task[]> => {
+  if (sortBy === 'createdAt') {
+    return prisma.task.findMany({
+      orderBy: { createdAt: sortOrder },
+    });
+  }
+
   const tasks = await prisma.task.findMany();
   return sortTasks(tasks, sortBy, sortOrder);
 };
-
 /**
  * Retrieve a single task by its ID.
  *

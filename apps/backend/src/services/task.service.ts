@@ -1,22 +1,8 @@
 import prisma from '../client';
-import { TaskStatus, Task, Prisma } from '@prisma/client';
+import { Task, Prisma } from '@prisma/client';
+import { CreateTaskInput, UpdateTaskInput } from '@shared-types';
 import { sortTasks } from '../utils/sortTask';
 import { AppError } from '../utils/AppError';
-/**
- * Input type for creating a task.
- */
-export type CreateTaskInput = {
-  title: string;
-  description?: string;
-  dueDate?: Date;
-  status?: TaskStatus;
-};
-
-/**
- * Input type for updating a task.
- * All fields are optional.
- */
-export type UpdateTaskInput = Partial<CreateTaskInput>;
 
 /**
  * Fetches all tasks from the database and sorts them.

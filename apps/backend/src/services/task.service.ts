@@ -1,6 +1,7 @@
 import prisma from '../client';
-import { TaskStatus, Task } from '@prisma/client';
+import { TaskStatus, Task, Prisma } from '@prisma/client';
 import { sortTasks } from '../utils/sortTask';
+import { AppError } from '../utils/AppError';
 /**
  * Input type for creating a task.
  */
@@ -46,10 +47,16 @@ export const getAllTasks = async (
  * @param id - The task's unique identifier.
  * @returns The found task or null.
  */
-export const getTaskById = async (id: string): Promise<Task | null> => {
-  return await prisma.task.findUnique({
+export const getTaskById = async (id: string): Promise<Task> => {
+  const task = await prisma.task.findUnique({
     where: { id },
   });
+
+  if (!task) {
+    throw new AppError('Task not found', 404);
+  }
+
+  return task;
 };
 
 /**
@@ -70,10 +77,17 @@ export const createTask = async (data: CreateTaskInput): Promise<Task> => {
  * @returns The updated task.
  */
 export const updateTask = async (id: string, data: UpdateTaskInput): Promise<Task> => {
-  return await prisma.task.update({
-    where: { id },
-    data,
-  });
+  try {
+    return await prisma.task.update({
+      where: { id },
+      data,
+    });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+      throw new AppError('Task not found', 404);
+    }
+    throw err;
+  }
 };
 
 /**
@@ -83,7 +97,14 @@ export const updateTask = async (id: string, data: UpdateTaskInput): Promise<Tas
  * @returns The deleted task.
  */
 export const deleteTask = async (id: string): Promise<Task> => {
-  return await prisma.task.delete({
-    where: { id },
-  });
+  try {
+    return await prisma.task.delete({
+      where: { id },
+    });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+      throw new AppError('Task not found', 404);
+    }
+    throw err;
+  }
 };

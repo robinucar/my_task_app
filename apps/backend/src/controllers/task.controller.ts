@@ -24,7 +24,6 @@ export const getTaskById = async (req: Request, res: Response, next: NextFunctio
   try {
     const { id } = req.params;
     const task = await taskService.getTaskById(id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
     res.status(200).json(task);
   } catch (err) {
     next(err);

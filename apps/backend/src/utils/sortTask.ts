@@ -4,11 +4,11 @@ import { Task } from '@prisma/client';
  * Defines the custom sort priority for each TaskStatus.
  * Lower values indicate higher priority when sorting in ascending order.
  */
-const statusOrder = {
+const statusOrder: Record<Task['status'], number> = {
   PENDING: 1,
   IN_PROGRESS: 2,
   COMPLETED: 3,
-} as const;
+};
 
 /**
  * Sorts an array of tasks by a specified field (`status` or `dueDate`) and order.
@@ -43,12 +43,12 @@ export const sortTasks = (
       if (!a.dueDate) return 1;
       if (!b.dueDate) return -1;
 
-      const aTime = new Date(a.dueDate).getTime();
-      const bTime = new Date(b.dueDate).getTime();
+      const aTime = a.dueDate.getTime();
+      const bTime = b.dueDate.getTime();
 
       return sortOrder === 'asc' ? aTime - bTime : bTime - aTime;
     });
   }
 
-  return tasks;
+  return [...tasks];
 };

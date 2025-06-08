@@ -7,20 +7,10 @@ import {
   deleteTask,
 } from '../../controllers/task.controller';
 import * as taskService from '../../services/task.service';
-
+import { singleMockTask } from '../__mocks__/task.mock';
 jest.mock('../../services/task.service');
 
 describe('Task Controller', () => {
-  const mockTask = {
-    id: '123',
-    title: 'Test Task',
-    description: 'Desc',
-    dueDate: new Date(),
-    status: 'PENDING',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
   const res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
@@ -33,7 +23,7 @@ describe('Task Controller', () => {
   });
 
   it('should return all tasks', async () => {
-    (taskService.getAllTasks as jest.Mock).mockResolvedValue([mockTask]);
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
 
     const req = {
       query: {},
@@ -43,7 +33,7 @@ describe('Task Controller', () => {
 
     expect(taskService.getAllTasks).toHaveBeenCalledWith('dueDate', 'asc');
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([mockTask]);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
   });
 
   it('should sort tasks by status', async () => {
@@ -51,13 +41,13 @@ describe('Task Controller', () => {
       query: { sortBy: 'status', sortOrder: 'desc' },
     } as unknown as Request;
 
-    (taskService.getAllTasks as jest.Mock).mockResolvedValue([mockTask]);
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
 
     await getAllTasks(req, res, next);
 
     expect(taskService.getAllTasks).toHaveBeenCalledWith('status', 'desc');
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([mockTask]);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
   });
 
   it('should sort tasks by dueDate', async () => {
@@ -65,13 +55,13 @@ describe('Task Controller', () => {
       query: { sortBy: 'dueDate', sortOrder: 'asc' },
     } as unknown as Request;
 
-    (taskService.getAllTasks as jest.Mock).mockResolvedValue([mockTask]);
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
 
     await getAllTasks(req, res, next);
 
     expect(taskService.getAllTasks).toHaveBeenCalledWith('dueDate', 'asc');
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([mockTask]);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
   });
 
   it('should return a task by ID', async () => {
@@ -79,27 +69,27 @@ describe('Task Controller', () => {
       params: { id: '123' },
     } as unknown as Request;
 
-    (taskService.getTaskById as jest.Mock).mockResolvedValue(mockTask);
+    (taskService.getTaskById as jest.Mock).mockResolvedValue(singleMockTask);
 
     await getTaskById(req, res, next);
 
     expect(taskService.getTaskById).toHaveBeenCalledWith('123');
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockTask);
+    expect(res.json).toHaveBeenCalledWith(singleMockTask);
   });
 
   it('should create a new task', async () => {
     const req = {
-      body: mockTask,
+      body: singleMockTask,
     } as unknown as Request;
 
-    (taskService.createTask as jest.Mock).mockResolvedValue(mockTask);
+    (taskService.createTask as jest.Mock).mockResolvedValue(singleMockTask);
 
     await createTask(req, res, next);
 
-    expect(taskService.createTask).toHaveBeenCalledWith(mockTask);
+    expect(taskService.createTask).toHaveBeenCalledWith(singleMockTask);
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockTask);
+    expect(res.json).toHaveBeenCalledWith(singleMockTask);
   });
 
   it('should update a task', async () => {
@@ -108,13 +98,13 @@ describe('Task Controller', () => {
       body: { title: 'Updated Task' },
     } as unknown as Request;
 
-    (taskService.updateTask as jest.Mock).mockResolvedValue(mockTask);
+    (taskService.updateTask as jest.Mock).mockResolvedValue(singleMockTask);
 
     await updateTask(req, res, next);
 
     expect(taskService.updateTask).toHaveBeenCalledWith('123', { title: 'Updated Task' });
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockTask);
+    expect(res.json).toHaveBeenCalledWith(singleMockTask);
   });
 
   it('should delete a task', async () => {
@@ -122,12 +112,12 @@ describe('Task Controller', () => {
       params: { id: '123' },
     } as unknown as Request;
 
-    (taskService.deleteTask as jest.Mock).mockResolvedValue(mockTask);
+    (taskService.deleteTask as jest.Mock).mockResolvedValue(singleMockTask);
 
     await deleteTask(req, res, next);
 
     expect(taskService.deleteTask).toHaveBeenCalledWith('123');
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockTask);
+    expect(res.json).toHaveBeenCalledWith(singleMockTask);
   });
 });

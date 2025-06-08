@@ -61,8 +61,8 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
 export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const deleted = await taskService.deleteTask(id);
-    res.status(200).json(deleted);
+    await taskService.deleteTask(id);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

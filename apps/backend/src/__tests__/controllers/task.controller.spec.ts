@@ -117,7 +117,6 @@ describe('Task Controller', () => {
     await deleteTask(req, res, next);
 
     expect(taskService.deleteTask).toHaveBeenCalledWith('123');
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(singleMockTask);
+    expect(res.status).toHaveBeenCalledWith(204);
   });
 });

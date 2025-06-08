@@ -44,4 +44,11 @@ Thumbs.db
 
 # Ignore all .env files
 .env
-**/.env
+**/.env.*
+# ...except example envs
+!.env.example
+!.env.*.example
+# build outputs
+dist
+apps/**/dist
+.nx

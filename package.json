@@ -9,7 +9,9 @@
     "test": "nx run-many --target=test --all",
     "prepare": "husky install",
     "prisma:generate": "prisma generate --schema=apps/backend/prisma/schema.prisma",
-    "prisma:migrate": "dotenv -e apps/backend/.env -- prisma migrate dev --schema=apps/backend/prisma/schema.prisma"
+    "prisma:migrate": "dotenv -e apps/backend/.env -- prisma migrate dev --schema=apps/backend/prisma/schema.prisma",
+    "reset:testdb": "dotenv -e apps/backend/.env.test -- prisma migrate reset --force --schema=apps/backend/prisma/schema.prisma --skip-seed",
+    "test:integration": "npm run reset:testdb && cross-env NODE_ENV=test jest --config jest.integration.config.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -30,6 +32,8 @@
     "@types/node": "~18.16.9",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
     "esbuild": "^0.19.2",
     "eslint": "^9.28.0",
     "eslint-plugin-prettier": "^5.4.1",

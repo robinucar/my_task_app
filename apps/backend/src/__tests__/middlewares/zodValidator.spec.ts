@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../middlewares/zodValidator';
+import { zodValidator } from '../../middlewares/zodValidator';
 
 describe('validate middleware', () => {
   const mockSchema = z.object({
@@ -24,7 +24,7 @@ describe('validate middleware', () => {
   it('should call next and attach parsed data on valid input', () => {
     req.body = { title: 'Test Task', dueDate: '2025-06-30' };
 
-    const middleware = validate(mockSchema);
+    const middleware = zodValidator(mockSchema);
     middleware(req as Request, res as Response, next);
 
     expect(next).toHaveBeenCalled();
@@ -34,7 +34,7 @@ describe('validate middleware', () => {
   it('should return 400 response on invalid input', () => {
     req.body = { title: '' };
 
-    const middleware = validate(mockSchema);
+    const middleware = zodValidator(mockSchema);
     middleware(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(400);

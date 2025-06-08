@@ -6,7 +6,8 @@ import {
   updateTask,
   deleteTask,
 } from '../controllers/task.controller';
-
+import { zodValidator } from '../middlewares/zodValidator';
+import { createTaskSchema, updateTaskSchema } from '../validation/task.zod.schema';
 const router = express.Router();
 
 /**
@@ -27,13 +28,13 @@ router.get('/:id', getTaskById);
  * @route POST /api/tasks
  * @description Create a new task
  */
-router.post('/', createTask);
+router.post('/', zodValidator(createTaskSchema), createTask);
 
 /**
  * @route PUT /api/tasks/:id
  * @description Update a task by ID
  */
-router.put('/:id', updateTask);
+router.put('/:id', zodValidator(updateTaskSchema), updateTask);
 
 /**
  * @route DELETE /api/tasks/:id

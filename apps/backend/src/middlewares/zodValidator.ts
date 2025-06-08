@@ -11,7 +11,7 @@ import { ZodTypeAny } from 'zod';
  * If validation passes, the parsed data is assigned to `req.body` and `next()` is called.
  * If validation fails, a 400 Bad Request response is returned with error details.
  */
-export const validate = <T extends ZodTypeAny>(schema: T) => {
+export const zodValidator = <T extends ZodTypeAny>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const result = schema.safeParse(req.body);
 

@@ -3,12 +3,14 @@ import express from 'express';
 import taskRoutes from './routes/task.routes';
 import { AppError } from './utils/AppError';
 import { errorHandler } from './middlewares/errorHandler';
+import cors from 'cors';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 5000;
 
 export const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (_req, res) => {
   res.send({ message: 'Hello API' });

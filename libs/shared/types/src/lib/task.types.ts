@@ -12,3 +12,13 @@ export type CreateTaskInput = {
 };
 
 export type UpdateTaskInput = Partial<CreateTaskInput>;
+
+export type Task = {
+  id: string;
+  title: string;
+  description?: string;
+  dueDate?: Date | null;
+  status: TaskStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};

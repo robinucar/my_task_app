@@ -52,3 +52,5 @@ Thumbs.db
 dist
 apps/**/dist
 .nx
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

@@ -12,7 +12,7 @@ services:
       - '5432:5432'
 
   backend:
-    image: my-task-backend
+    image: robinwinters/task-management-app-backend:latest
     container_name: taskmanager-backend
     depends_on:
       - db

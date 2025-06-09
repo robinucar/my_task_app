@@ -92,8 +92,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Get version from backend/package.json
-        id: version
-        run: echo "version=$(jq -r .version apps/backend/package.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(jq -r .version apps/backend/package.json)
+          if [ -z "$version" ] || [ "$version" == "null" ]; then
+            version="0.0.0"
+          fi
+          echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -103,4 +107,4 @@ jobs:
           push: true
           tags: |
             robinwinters/task-management-app:latest
-            robinwinters/task-management-app:${{ steps.version.outputs.version }}
+            robinwinters/task-management-app:${{ env.VERSION }}

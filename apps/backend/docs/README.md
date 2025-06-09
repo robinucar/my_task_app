@@ -199,6 +199,57 @@ docker stop <id>     # Stop it
 docker rm <id>       # Remove it
 ```
 
+## ✅ Backend CI Pipeline (GitHub Actions)
+
+This project includes an automated **Backend CI** workflow configured via GitHub Actions.
+
+### Trigger Conditions
+
+The workflow runs on:
+
+- Pushes or pull requests to the `main` branch
+- Changes in:
+  - `apps/backend/**`
+  - `libs/**`
+  - Root `package.json`, `package-lock.json`, `nx.json`
+  - `.github/workflows/backend-ci.yml`
+
+### What It Does
+
+The pipeline performs the following steps:
+
+1. **Checkout Code** – Clones the repository.
+2. **Set Up Node.js** – Uses Node.js v20.
+3. **Install Dependencies** – Installs packages with `npm ci`.
+4. **Generate Prisma Client** – Runs `npx prisma generate` for backend schema.
+5. **Lint Backend** – Lints the backend codebase.
+6. **Run Unit Tests** – Runs backend unit tests using `nx test`.
+7. **Run Integration Tests** – Spins up a PostgreSQL service and runs integration tests against it using Jest.
+8. **Build Backend** – Builds the backend project with Nx.
+9. **Build & Push Docker Image** _(on `main` only)_:
+   - Builds backend image using the `apps/backend/Dockerfile`
+   - Tags with `latest` and the current version from `package.json`
+   - Pushes to Docker Hub
+
+### Notes
+
+- Integration tests use a temporary PostgreSQL database configured via GitHub Actions `services`.
+- Ensure `DOCKERHUB_USERNAME` and `DOCKERHUB_ACCESS_TOKEN` secrets are set in repository settings.
+
+## 🔮 Future Improvements
+
+- Pagination
+  Implement pagination for the GET /api/tasks endpoint to support large datasets efficiently.
+
+- OpenAPI / Swagger Docs
+  Auto-generate and serve API documentation using OpenAPI to improve usability for consumers.
+
+- E2E Testing
+  Expand the test coverage to include end-to-end tests simulating actual user flows.
+
+- CD (Deployment) Integration
+  Automate deployment of the backend to a platform (e.g., AWS, Railway, Fly.io) after successful CI runs.
+
 ## 📦 Tooling Summary
 
 - Nx for monorepo management
@@ -212,4 +263,9 @@ docker rm <id>       # Remove it
 - dotenv-cli to manage environment variables
 
 - Jest + supertest for tests (unit + integration)
+
 - Docker for containerization
+
+- Github Actions for CI pipeline
+
+- Zod for validation

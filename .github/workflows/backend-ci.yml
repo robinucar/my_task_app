@@ -44,7 +44,7 @@ jobs:
         run: npx nx lint backend
 
       - name: Run backend tests
-        run: npx nx test backend --ci --code-coverage
+        run: npx nx test backend --ci
 
       - name: Run integration tests
         run: npx jest apps/backend/__integration-tests__ --runInBand

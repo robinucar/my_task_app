@@ -38,3 +38,27 @@ A full-stack task management application built with:
 
 For backend-specific setup, API reference, and Prisma usage, see:  
 [`apps/backend/docs/README.md`](apps/backend/docs/README.md)
+
+## 🐳 Docker Compose Setup
+
+This project includes a fully containerized setup for the PostgreSQL database and backend API.
+
+### 1. Copy and update the environment file:
+
+```
+cp .env.example .env
+```
+
+### 2. ▶️ Run the stack
+
+To build and start all services:
+
+```
+docker compose up --build
+```
+
+### 3. 🌐 Access
+
+- Backend API: http://localhost:5001/api/tasks
+- Health Check: http://localhost:5001/health
+- PostgreSQL: Accessible on port 5432

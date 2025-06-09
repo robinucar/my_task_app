@@ -12,8 +12,8 @@ apps/backend/
 ├── __integration-tests__ # integration tests for CRUD + validation
 ├── src/ # Express server and API routes
 ├── docs/ # Backend documentation
-├── .env # Local environment variables (not committed)
-├── .env.example # Example environment file
+├── .env.test # Local environment variables (not committed)
+├── .env.test.example # Example environment file
 └── project.json # Nx project config
 ```
 
@@ -32,12 +32,13 @@ docker run --name task-db \
   -d postgres
 ```
 
-### 2. Create .env file
+### 2. Create .env file in the root
 
 Copy the example and update it as needed:
 
 ```
-cp apps/backend/.env.example apps/backend/.env
+cp .env.example .env
+
 ```
 
 Ensure it contains:
@@ -171,6 +172,33 @@ This will:
 - NODE_ENV=test: Activates test-specific behaviors
 - jest.integration.config.ts: Targets integration test files only
 
+---
+
+## 🐳 Docker (Backend Only)
+
+You can containerize and run the backend API using Docker, without relying on Nx.
+
+### 🔨 1. Build the Docker Image
+
+```
+docker build -t my-task-backend ./apps/backend
+```
+
+### ▶️ 2. Run the Docker Container
+
+```
+docker run -p 5000:5000 --env-file .env my-task-backend
+
+```
+
+### ❌ 3. Stop & Remove Docker Container (Optional)
+
+```
+docker ps            # Find your container ID
+docker stop <id>     # Stop it
+docker rm <id>       # Remove it
+```
+
 ## 📦 Tooling Summary
 
 - Nx for monorepo management
@@ -184,3 +212,4 @@ This will:
 - dotenv-cli to manage environment variables
 
 - Jest + supertest for tests (unit + integration)
+- Docker for containerization

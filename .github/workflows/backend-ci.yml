@@ -91,9 +91,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Get version from backend/package.json
+      - name: Get version from root package.json
         run: |
-          version=$(jq -r .version apps/backend/package.json)
+          version=$(jq -r .version package.json)
           if [ -z "$version" ] || [ "$version" == "null" ]; then
             version="0.0.0"
           fi

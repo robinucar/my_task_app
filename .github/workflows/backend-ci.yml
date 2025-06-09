@@ -10,7 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'nx.json'
-      - '.github/workflows/backend.yml'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
     branches:
       - main
@@ -20,7 +20,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'nx.json'
-      - '.github/workflows/backend.yml'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
   build-and-test:

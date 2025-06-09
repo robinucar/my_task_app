@@ -1,8 +1,11 @@
 import prisma from '../client';
-import { Task, Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateTaskInput, UpdateTaskInput } from '@shared-types';
 import { sortTasks } from '../utils/sortTask';
 import { AppError } from '../utils/AppError';
+
+type Task = Awaited<ReturnType<typeof prisma.task.findFirst>>;
+type TaskListItem = Awaited<ReturnType<typeof prisma.task.findMany>>[number];
 
 /**
  * Fetches all tasks from the database and sorts them.
@@ -17,7 +20,7 @@ import { AppError } from '../utils/AppError';
 export const getAllTasks = async (
   sortBy: 'status' | 'dueDate' | 'createdAt' = 'createdAt',
   sortOrder: 'asc' | 'desc' = 'desc',
-): Promise<Task[]> => {
+): Promise<TaskListItem[]> => {
   if (sortBy === 'createdAt') {
     return prisma.task.findMany({
       orderBy: { createdAt: sortOrder },
@@ -27,11 +30,12 @@ export const getAllTasks = async (
   const tasks = await prisma.task.findMany();
   return sortTasks(tasks, sortBy, sortOrder);
 };
+
 /**
  * Retrieve a single task by its ID.
  *
  * @param id - The task's unique identifier.
- * @returns The found task or null.
+ * @returns The found task or throws an error.
  */
 export const getTaskById = async (id: string): Promise<Task> => {
   const task = await prisma.task.findUnique({
@@ -69,7 +73,7 @@ export const updateTask = async (id: string, data: UpdateTaskInput): Promise<Tas
       data,
     });
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
       throw new AppError('Task not found', 404);
     }
     throw err;
@@ -88,7 +92,7 @@ export const deleteTask = async (id: string): Promise<Task> => {
       where: { id },
     });
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
       throw new AppError('Task not found', 404);
     }
     throw err;

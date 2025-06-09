@@ -45,6 +45,8 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
   title: z.string().min(1).max(TITLE_MAX_LENGTH).optional(),
   description: z.string().max(DESCRIPTION_MAX_LENGTH).optional(),
-  dueDate: z.coerce.date().optional(),
+  dueDate: z
+    .preprocess((val) => (val === '' ? null : val), z.union([z.coerce.date(), z.null()]))
+    .optional(),
   status: TaskStatusEnum.optional(),
 });

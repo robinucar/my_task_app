@@ -11,7 +11,9 @@ export type CreateTaskInput = {
   status?: TaskStatus;
 };
 
-export type UpdateTaskInput = Partial<CreateTaskInput>;
+export type UpdateTaskInput = Omit<Partial<CreateTaskInput>, 'dueDate'> & {
+  dueDate?: string | Date | null;
+};
 
 export type Task = {
   id: string;

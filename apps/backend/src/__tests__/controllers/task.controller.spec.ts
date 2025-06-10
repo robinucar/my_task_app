@@ -119,4 +119,43 @@ describe('Task Controller', () => {
     expect(taskService.deleteTask).toHaveBeenCalledWith('123');
     expect(res.status).toHaveBeenCalledWith(204);
   });
+  it('should default to createdAt if sortBy is invalid', async () => {
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
+
+    const req = {
+      query: { sortBy: 'invalidValue' },
+    } as unknown as Request;
+
+    await getAllTasks(req, res, next);
+
+    expect(taskService.getAllTasks).toHaveBeenCalledWith('createdAt', 'asc');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
+  });
+  it('should sort by status if sortBy=status', async () => {
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
+
+    const req = {
+      query: { sortBy: 'status', sortOrder: 'desc' },
+    } as unknown as Request;
+
+    await getAllTasks(req, res, next);
+
+    expect(taskService.getAllTasks).toHaveBeenCalledWith('status', 'desc');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
+  });
+  it('should sort by dueDate if sortBy=dueDate', async () => {
+    (taskService.getAllTasks as jest.Mock).mockResolvedValue([singleMockTask]);
+
+    const req = {
+      query: { sortBy: 'dueDate', sortOrder: 'asc' },
+    } as unknown as Request;
+
+    await getAllTasks(req, res, next);
+
+    expect(taskService.getAllTasks).toHaveBeenCalledWith('dueDate', 'asc');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([singleMockTask]);
+  });
 });

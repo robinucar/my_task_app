@@ -68,9 +68,13 @@ export const createTask = async (data: CreateTaskInput): Promise<Task> => {
  */
 export const updateTask = async (id: string, data: UpdateTaskInput): Promise<Task> => {
   try {
+    const cleanData = {
+      ...data,
+      dueDate: data.dueDate === undefined || data.dueDate === '' ? null : data.dueDate,
+    };
     return await prisma.task.update({
       where: { id },
-      data,
+      data: cleanData,
     });
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {

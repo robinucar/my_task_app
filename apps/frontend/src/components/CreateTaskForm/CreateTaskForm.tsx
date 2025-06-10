@@ -28,7 +28,7 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onSuccess, initi
       id: initialValues?.id,
       title: title.trim(),
       description: description.trim() || undefined,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
+      dueDate: dueDate?.trim() ? new Date(dueDate) : undefined,
       status,
     };
 

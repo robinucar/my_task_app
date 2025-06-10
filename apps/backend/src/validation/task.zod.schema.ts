@@ -45,9 +45,7 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
   title: z.string().min(1).max(TITLE_MAX_LENGTH).optional(),
   description: z.string().max(DESCRIPTION_MAX_LENGTH).optional(),
-  dueDate: z
-    .preprocess((val) => (val === '' ? null : val), z.union([z.coerce.date(), z.null()]))
-    .optional(),
+  dueDate: z.preprocess((val) => (val === '' ? undefined : val), z.coerce.date().optional()),
   status: TaskStatusEnum.optional(),
 });
 
@@ -63,6 +61,6 @@ export const updateTaskSchema = z.object({
  * This schema ensures that only allowed values for sorting are passed to the backend.
  */
 export const getAllTasksQuerySchema = z.object({
-  sortBy: z.enum(['status', 'dueDate']).optional(),
+  sortBy: z.enum(['status', 'dueDate', 'createdAt']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
 });

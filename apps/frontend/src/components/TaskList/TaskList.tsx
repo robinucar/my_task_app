@@ -1,6 +1,7 @@
 import React from 'react';
-import { useTasks } from '../hooks/useTasks';
+import { useTasks } from '../../hooks/useTasks';
 import { Task } from '@shared-types';
+import { Loading } from '../Loading/Loading';
 import './TaskList.css';
 
 type SortBy = 'status' | 'dueDate' | 'createdAt';
@@ -46,7 +47,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     return 0;
   });
 
-  if (isLoading) return <p className="task-message">Loading tasks...</p>;
+  if (isLoading) return <Loading />;
   if (isError) return <p className="task-message error">Failed to load tasks.</p>;
   if (tasks.length === 0) return <p className="task-message">No tasks found.</p>;
 

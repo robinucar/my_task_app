@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TaskList } from '../components/TaskList';
+import { TaskList } from '../components/TaskList/TaskList';
 import { CreateTaskForm } from '../components/CreateTaskForm/CreateTaskForm';
 import { CreateTaskModal } from '../components/CreateTaskModal/CreateTaskModal';
 import { useTasks } from '../hooks/useTasks';

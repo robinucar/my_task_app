@@ -2,13 +2,11 @@ import { useState } from 'react';
 import { TaskList } from '../components/TaskList/TaskList';
 import { CreateTaskForm } from '../components/CreateTaskForm/CreateTaskForm';
 import { CreateTaskModal } from '../components/CreateTaskModal/CreateTaskModal';
-import { useTasks } from '../hooks/useTasks';
 import { ConfirmDialog } from '../components/ConfirmDialog/ConfirmDialog';
+import { useTasks } from '../hooks/useTasks';
+import { useSortParams } from '../hooks/tasks/useSortParams';
 import { Task } from '@shared-types';
 import './App.css';
-
-type SortBy = 'status' | 'dueDate' | 'createdAt' | null;
-type SortOrder = 'asc' | 'desc';
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -16,22 +14,8 @@ function App() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  const [sortBy, setSortBy] = useState<SortBy>('createdAt');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-
   const { deleteTask } = useTasks();
-
-  const handleSortToggle = (field: Exclude<SortBy, null>) => {
-    if (sortBy !== field) {
-      setSortBy(field);
-      setSortOrder('asc');
-    } else if (sortOrder === 'asc') {
-      setSortOrder('desc');
-    } else {
-      setSortBy('createdAt');
-      setSortOrder('desc');
-    }
-  };
+  const { sortBy, sortOrder, toggleSort } = useSortParams();
 
   const handleDeleteRequest = (taskId: string) => {
     setTaskToDelete({ id: taskId } as Task);
@@ -69,21 +53,15 @@ function App() {
       </button>
 
       <div className="sort-controls">
-        <button onClick={() => handleSortToggle('dueDate')}>
+        <button onClick={() => toggleSort('dueDate')}>
           Sort by Due Date {sortBy === 'dueDate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
         </button>
-        <button onClick={() => handleSortToggle('status')}>
+        <button onClick={() => toggleSort('status')}>
           Sort by Status {sortBy === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
         </button>
       </div>
 
-      <TaskList
-        onEdit={handleEditRequest}
-        onDelete={handleDeleteRequest}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        toggleSort={handleSortToggle}
-      />
+      <TaskList onEdit={handleEditRequest} onDelete={handleDeleteRequest} />
 
       {modalOpen && (
         <CreateTaskModal onClose={handleModalClose}>

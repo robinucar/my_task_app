@@ -4,48 +4,13 @@ import { Task } from '@shared-types';
 import { Loading } from '../Loading/Loading';
 import './TaskList.css';
 
-type SortBy = 'status' | 'dueDate' | 'createdAt';
-type SortOrder = 'asc' | 'desc';
-
 interface TaskListProps {
   onEdit: (task: Task) => void;
   onDelete: (taskId: string) => void;
-  sortBy: SortBy | null;
-  sortOrder: SortOrder;
-  toggleSort: (field: SortBy) => void;
 }
 
-export const TaskList: React.FC<TaskListProps> = ({
-  onEdit,
-  onDelete,
-  sortBy,
-  sortOrder,
-  toggleSort,
-}) => {
+export const TaskList: React.FC<TaskListProps> = ({ onEdit, onDelete }) => {
   const { data: tasks = [], isLoading, isError } = useTasks();
-
-  const sortedTasks = [...tasks].sort((a, b) => {
-    if (sortBy === 'dueDate') {
-      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
-      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    }
-
-    if (sortBy === 'status') {
-      const order = { PENDING: 1, IN_PROGRESS: 2, COMPLETED: 3 };
-      const valA = order[a.status];
-      const valB = order[b.status];
-      return sortOrder === 'asc' ? valA - valB : valB - valA;
-    }
-
-    if (sortBy === 'createdAt') {
-      const createdA = new Date(a.createdAt).getTime();
-      const createdB = new Date(b.createdAt).getTime();
-      return sortOrder === 'asc' ? createdA - createdB : createdB - createdA;
-    }
-
-    return 0;
-  });
 
   if (isLoading) return <Loading />;
   if (isError) return <p className="task-message error">Failed to load tasks.</p>;
@@ -64,7 +29,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           </tr>
         </thead>
         <tbody>
-          {sortedTasks.map((task) => (
+          {tasks.map((task) => (
             <tr key={task.id}>
               <td>{task.title}</td>
               <td>{task.description || '—'}</td>

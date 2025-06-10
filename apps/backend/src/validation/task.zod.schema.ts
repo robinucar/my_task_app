@@ -50,3 +50,19 @@ export const updateTaskSchema = z.object({
     .optional(),
   status: TaskStatusEnum.optional(),
 });
+
+/**
+ * Zod schema for validating query parameters when fetching tasks.
+ *
+ * - `sortBy`: Optional. Must be either "status" or "dueDate" if provided.
+ *             If omitted or invalid, backend defaults to sorting by "createdAt".
+ *
+ * - `sortOrder`: Optional. Must be "asc" or "desc" if provided.
+ *                Defaults to "asc" in the controller if omitted.
+ *
+ * This schema ensures that only allowed values for sorting are passed to the backend.
+ */
+export const getAllTasksQuerySchema = z.object({
+  sortBy: z.enum(['status', 'dueDate']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+});

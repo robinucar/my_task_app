@@ -1,4 +1,8 @@
-import { createTaskSchema, updateTaskSchema } from '../../validation/task.zod.schema';
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  getAllTasksQuerySchema,
+} from '../../validation/task.zod.schema';
 
 describe('createTaskSchema', () => {
   it('validates a complete and correct payload', () => {
@@ -50,6 +54,10 @@ describe('updateTaskSchema', () => {
 
   it('fails if title is an empty string', () => {
     const result = updateTaskSchema.safeParse({ title: '' });
+    expect(result.success).toBe(false);
+  });
+  it('should reject invalid sortBy', () => {
+    const result = getAllTasksQuerySchema.safeParse({ sortBy: 'invalidValue' });
     expect(result.success).toBe(false);
   });
 });

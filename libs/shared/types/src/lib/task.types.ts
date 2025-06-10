@@ -24,3 +24,11 @@ export type Task = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type TaskSortBy = 'status' | 'dueDate';
+export type TaskSortOrder = 'asc' | 'desc';
+
+export type SortQuery = {
+  sortBy?: TaskSortBy;
+  sortOrder?: TaskSortOrder;
+};

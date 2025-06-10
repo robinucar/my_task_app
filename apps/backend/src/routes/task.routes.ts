@@ -7,7 +7,11 @@ import {
   deleteTask,
 } from '../controllers/task.controller';
 import { zodValidator } from '../middlewares/zodValidator';
-import { createTaskSchema, updateTaskSchema } from '../validation/task.zod.schema';
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  getAllTasksQuerySchema,
+} from '../validation/task.zod.schema';
 const router = express.Router();
 
 /**
@@ -16,7 +20,7 @@ const router = express.Router();
  * @queryParam sortBy {string} - Field to sort by (dueDate or status)
  * @queryParam sortOrder {string} - Sort direction (asc or desc)
  */
-router.get('/', getAllTasks);
+router.get('/', zodValidator(getAllTasksQuerySchema, 'query'), getAllTasks);
 
 /**
  * @route GET /api/tasks/:id

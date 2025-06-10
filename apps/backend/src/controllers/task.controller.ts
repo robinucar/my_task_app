@@ -7,10 +7,15 @@ import * as taskService from '../services/task.service';
 export const getAllTasks = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { sortBy, sortOrder } = req.query;
-    const tasks = await taskService.getAllTasks(
-      sortBy === 'status' ? 'status' : 'dueDate',
-      sortOrder === 'desc' ? 'desc' : 'asc',
-    );
+
+    // Only allow status or dueDate for frontend sorting
+    const sortByParam: 'status' | 'dueDate' | 'createdAt' =
+      sortBy === 'status' || sortBy === 'dueDate' ? sortBy : 'createdAt';
+
+    const sortOrderParam: 'asc' | 'desc' = sortOrder === 'desc' ? 'desc' : 'asc';
+
+    const tasks = await taskService.getAllTasks(sortByParam, sortOrderParam);
+
     res.status(200).json(tasks);
   } catch (err) {
     next(err);

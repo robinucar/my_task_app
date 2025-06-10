@@ -31,7 +31,7 @@ describe('Task Controller', () => {
 
     await getAllTasks(req, res, next);
 
-    expect(taskService.getAllTasks).toHaveBeenCalledWith('dueDate', 'asc');
+    expect(taskService.getAllTasks).toHaveBeenCalledWith('createdAt', 'asc');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith([singleMockTask]);
   });

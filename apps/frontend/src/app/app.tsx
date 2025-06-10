@@ -41,27 +41,29 @@ function App() {
   };
 
   return (
-    <div className={`app-container ${modalOpen || confirmOpen ? 'blurred' : ''}`}>
-      <h1>My Tasks</h1>
+    <>
+      <div className={`app-container ${modalOpen || confirmOpen ? 'blurred' : ''}`}>
+        <h1>My Tasks</h1>
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className="create-button"
-        aria-label="Open Create Task Modal"
-      >
-        + Create Task
-      </button>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="create-button"
+          aria-label="Open Create Task Modal"
+        >
+          + Create Task
+        </button>
 
-      <div className="sort-controls">
-        <button onClick={() => toggleSort('dueDate')}>
-          Sort by Due Date {sortBy === 'dueDate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-        </button>
-        <button onClick={() => toggleSort('status')}>
-          Sort by Status {sortBy === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-        </button>
+        <div className="sort-controls">
+          <button onClick={() => toggleSort('dueDate')}>
+            Sort by Due Date {sortBy === 'dueDate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+          </button>
+          <button onClick={() => toggleSort('status')}>
+            Sort by Status {sortBy === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+          </button>
+        </div>
+
+        <TaskList onEdit={handleEditRequest} onDelete={handleDeleteRequest} />
       </div>
-
-      <TaskList onEdit={handleEditRequest} onDelete={handleDeleteRequest} />
 
       {modalOpen && (
         <CreateTaskModal onClose={handleModalClose}>
@@ -80,7 +82,7 @@ function App() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
 

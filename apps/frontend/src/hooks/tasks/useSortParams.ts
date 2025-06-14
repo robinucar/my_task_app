@@ -2,24 +2,43 @@ import { useSearchParams } from 'react-router-dom';
 import type { TaskSortBy, TaskSortOrder } from '@shared-types';
 
 /**
+ * Type guard to validate sortBy values
+ */
+const isSortBy = (value: unknown): value is TaskSortBy => value === 'status' || value === 'dueDate';
+
+/**
+ * Type guard to validate sortOrder values
+ */
+const isSortOrder = (value: unknown): value is TaskSortOrder => value === 'asc' || value === 'desc';
+
+/**
  * Hook to manage sorting state via URL search params.
  *
- * Only supports 'status' and 'dueDate'. Defaults are handled by the backend.
+ * Supports sorting by 'status' or 'dueDate', with 'asc' or 'desc' order.
  */
 export const useSortParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const sortBy = searchParams.get('sortBy') as TaskSortBy | null;
-  const sortOrder = searchParams.get('sortOrder') as TaskSortOrder | null;
+  const sortByParam = searchParams.get('sortBy');
+  const sortOrderParam = searchParams.get('sortOrder');
+
+  const sortBy = isSortBy(sortByParam) ? sortByParam : null;
+  const sortOrder = isSortOrder(sortOrderParam) ? sortOrderParam : null;
 
   const toggleSort = (field: TaskSortBy) => {
+    const newParams = new URLSearchParams(searchParams);
+
     if (field !== sortBy) {
-      setSearchParams({ sortBy: field, sortOrder: 'asc' });
+      newParams.set('sortBy', field);
+      newParams.set('sortOrder', 'asc');
     } else if (sortOrder === 'asc') {
-      setSearchParams({ sortBy: field, sortOrder: 'desc' });
+      newParams.set('sortOrder', 'desc');
     } else {
-      setSearchParams({});
+      newParams.delete('sortBy');
+      newParams.delete('sortOrder');
     }
+
+    setSearchParams(newParams);
   };
 
   return { sortBy, sortOrder, toggleSort };

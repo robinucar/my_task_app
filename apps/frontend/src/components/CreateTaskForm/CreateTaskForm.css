@@ -78,6 +78,12 @@ button:disabled {
 .cancel-button:hover {
   background-color: #ccc;
 }
+.error-text {
+  color: #d00;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  display: block;
+}
 
 @media (max-width: 600px) {
   .task-form {

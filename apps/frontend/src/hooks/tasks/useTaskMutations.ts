@@ -9,8 +9,9 @@ import type { Task } from '@shared-types';
 export const useTaskMutations = () => {
   const queryClient = useQueryClient();
 
-  const createTask = useMutation({
-    mutationFn: async (newTask: Partial<Task>) => {
+  // Create Task: returns Task, accepts Partial<Task>
+  const createTask = useMutation<Task, Error, Partial<Task>>({
+    mutationFn: async (newTask) => {
       const res = await api.post('/tasks', newTask);
       return res.data;
     },
@@ -19,8 +20,12 @@ export const useTaskMutations = () => {
     },
   });
 
-  const deleteTask = useMutation({
-    mutationFn: async (taskId: string) => {
+  // Delete Task: returns void, accepts string (taskId)
+  const deleteTask = useMutation<void, Error, string>({
+    mutationFn: async (taskId) => {
+      if (!taskId) {
+        throw new Error('❌ Cannot delete task: ID is missing');
+      }
       await api.delete(`/tasks/${taskId}`);
     },
     onSuccess: () => {
@@ -28,8 +33,9 @@ export const useTaskMutations = () => {
     },
   });
 
-  const updateTask = useMutation({
-    mutationFn: async (updatedTask: Partial<Task> & { id: string }) => {
+  // Update Task: returns Task, accepts Partial<Task> with id
+  const updateTask = useMutation<Task, Error, Partial<Task> & { id: string }>({
+    mutationFn: async (updatedTask) => {
       const res = await api.put(`/tasks/${updatedTask.id}`, updatedTask);
       return res.data;
     },

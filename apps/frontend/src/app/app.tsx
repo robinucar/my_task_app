@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { Task } from '@shared-types';
+
+import { useTasks } from '../hooks/useTasks';
+import { useSortParams } from '../hooks/tasks/useSortParams';
+
 import { TaskList } from '../components/TaskList/TaskList';
 import { CreateTaskForm } from '../components/CreateTaskForm/CreateTaskForm';
 import { CreateTaskModal } from '../components/CreateTaskModal/CreateTaskModal';
 import { ConfirmDialog } from '../components/ConfirmDialog/ConfirmDialog';
-import { useTasks } from '../hooks/useTasks';
-import { useSortParams } from '../hooks/tasks/useSortParams';
-import { Task } from '@shared-types';
+
 import './App.css';
 
 function App() {
@@ -14,18 +17,24 @@ function App() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  const { deleteTask } = useTasks();
+  const {
+    deleteTask: { mutate: deleteTaskMutate },
+  } = useTasks();
+
   const { sortBy, sortOrder, toggleSort } = useSortParams();
 
-  const handleDeleteRequest = (taskId: string) => {
-    setTaskToDelete({ id: taskId } as Task);
+  const handleDeleteRequest = (task: Task) => {
+    setTaskToDelete(task); // ✅ Ensure full task object is stored
     setConfirmOpen(true);
   };
 
   const confirmDelete = () => {
-    if (taskToDelete) {
-      deleteTask.mutate(taskToDelete.id);
+    if (typeof taskToDelete === 'object' && taskToDelete?.id) {
+      deleteTaskMutate(taskToDelete.id);
+    } else {
+      console.error('❌ Task to delete is invalid or missing ID:', taskToDelete);
     }
+
     setConfirmOpen(false);
     setTaskToDelete(null);
   };

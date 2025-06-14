@@ -1,10 +1,11 @@
 import { z } from 'zod';
+
 /**
  * Constants for maximum lengths of task fields.
  */
-
 const TITLE_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 500;
+
 /**
  * Enum representing valid task statuses.
  * Matches the Prisma enum: PENDING, IN_PROGRESS, COMPLETED
@@ -16,6 +17,8 @@ const TaskStatusEnum = z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']);
  *
  * - `title`: Required, non-empty string.
  * - `description`: Optional, max 500 characters.
+ *                 Empty strings are treated as undefined.
+ *                 Null is also allowed (nullable).
  * - `dueDate`: Optional, coerced to Date.
  * - `status`: Optional enum, defaults to 'PENDING' in the database if omitted.
  */
@@ -25,8 +28,11 @@ export const createTaskSchema = z.object({
     .min(1, 'Title is required')
     .max(TITLE_MAX_LENGTH, `Title must be at most ${TITLE_MAX_LENGTH} characters`),
   description: z
-    .string()
-    .max(DESCRIPTION_MAX_LENGTH, `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters`)
+    .preprocess((val) => {
+      if (val === '') return undefined;
+      if (val === null) return null;
+      return val;
+    }, z.string().max(DESCRIPTION_MAX_LENGTH).nullable())
     .optional(),
   dueDate: z.coerce.date().optional(),
   status: TaskStatusEnum.optional(),
@@ -39,26 +45,31 @@ export const createTaskSchema = z.object({
  *
  * - `title`: Optional, non-empty string if provided.
  * - `description`: Optional, max 500 characters.
- * - `dueDate`: Optional, coerced to Date.
+ *                 Empty strings are treated as undefined.
+ *                 Null is also allowed (nullable).
+ * - `dueDate`: Optional, coerced to Date. Empty string is treated as undefined.
  * - `status`: Optional enum.
  */
 export const updateTaskSchema = z.object({
   title: z.string().min(1).max(TITLE_MAX_LENGTH).optional(),
-  description: z.string().max(DESCRIPTION_MAX_LENGTH).optional(),
-  dueDate: z.preprocess((val) => (val === '' ? undefined : val), z.coerce.date().optional()),
+  description: z
+    .preprocess((val) => {
+      if (val === '') return undefined;
+      if (val === null) return null;
+      return val;
+    }, z.string().max(DESCRIPTION_MAX_LENGTH).nullable())
+    .optional(),
+  dueDate: z
+    .preprocess((val) => (val === '' ? undefined : val), z.coerce.date().optional())
+    .optional(),
   status: TaskStatusEnum.optional(),
 });
 
 /**
  * Zod schema for validating query parameters when fetching tasks.
  *
- * - `sortBy`: Optional. Must be either "status" or "dueDate" if provided.
- *             If omitted or invalid, backend defaults to sorting by "createdAt".
- *
- * - `sortOrder`: Optional. Must be "asc" or "desc" if provided.
- *                Defaults to "asc" in the controller if omitted.
- *
- * This schema ensures that only allowed values for sorting are passed to the backend.
+ * - `sortBy`: Optional. Must be either "status", "dueDate", or "createdAt".
+ * - `sortOrder`: Optional. Must be "asc" or "desc".
  */
 export const getAllTasksQuerySchema = z.object({
   sortBy: z.enum(['status', 'dueDate', 'createdAt']).optional(),

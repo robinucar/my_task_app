@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Task, TaskStatus } from '@shared-types';
 import { useTasks } from '../../hooks/useTasks';
+import { useTaskFormState } from '../../hooks/useTaskFormState';
+import { ErrorMessage } from '../Error/ErrorMessage';
 import './CreateTaskForm.css';
 
 interface CreateTaskFormProps {
@@ -10,41 +12,53 @@ interface CreateTaskFormProps {
 
 export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onSuccess, initialValues }) => {
   const { createTask, updateTask } = useTasks();
-
-  const [title, setTitle] = useState(initialValues?.title || '');
-  const [description, setDescription] = useState(initialValues?.description || '');
-  const [dueDate, setDueDate] = useState(
-    initialValues?.dueDate ? new Date(initialValues.dueDate).toISOString().split('T')[0] : '',
-  );
-  const [status, setStatus] = useState<TaskStatus>(initialValues?.status || TaskStatus.PENDING);
+  const {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    dueDate,
+    setDueDate,
+    status,
+    setStatus,
+    errors,
+    validateAndBuildPayload,
+    resetForm,
+  } = useTaskFormState(initialValues);
 
   const isEditing = !!initialValues?.id;
+  const isPending = (isEditing ? updateTask.status : createTask.status) === 'pending';
+  const buttonText = isPending
+    ? isEditing
+      ? 'Updating...'
+      : 'Creating...'
+    : isEditing
+      ? 'Update Task'
+      : 'Create Task';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
 
-    const payload = {
-      id: initialValues?.id,
-      title: title.trim(),
-      description: description.trim() || undefined,
-      dueDate: dueDate?.trim() ? new Date(dueDate) : undefined,
-      status,
-    };
+    const payload = validateAndBuildPayload();
 
-    const mutation = isEditing ? updateTask : createTask;
+    if (!payload) return;
 
-    mutation.mutate(payload as any, {
-      onSuccess: () => {
-        if (!isEditing) {
-          setTitle('');
-          setDescription('');
-          setDueDate('');
-          setStatus(TaskStatus.PENDING);
-        }
-        onSuccess();
-      },
-    });
+    if (isEditing) {
+      if ('id' in payload) {
+        updateTask.mutate(payload, {
+          onSuccess: () => {
+            onSuccess();
+          },
+        });
+      }
+    } else {
+      createTask.mutate(payload, {
+        onSuccess: () => {
+          resetForm();
+          onSuccess();
+        },
+      });
+    }
   };
 
   return (
@@ -58,21 +72,24 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onSuccess, initi
         <input
           id="title"
           type="text"
-          placeholder="Enter task title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          required
+          aria-invalid={!!errors.title}
+          aria-describedby={errors.title ? 'title-error' : undefined}
         />
+        {errors.title && <ErrorMessage id="title-error" message={errors.title} />}
       </div>
 
       <div className="form-group">
         <label htmlFor="description">Description (optional)</label>
         <textarea
           id="description"
-          placeholder="Enter task description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          aria-invalid={!!errors.description}
+          aria-describedby={errors.description ? 'description-error' : undefined}
         />
+        {errors.description && <ErrorMessage id="description-error" message={errors.description} />}
       </div>
 
       <div className="form-group">
@@ -82,7 +99,10 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onSuccess, initi
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
+          aria-invalid={!!errors.dueDate}
+          aria-describedby={errors.dueDate ? 'dueDate-error' : undefined}
         />
+        {errors.dueDate && <ErrorMessage id="dueDate-error" message={errors.dueDate} />}
       </div>
 
       <div className="form-group">
@@ -101,17 +121,8 @@ export const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ onSuccess, initi
       </div>
 
       <div className="form-buttons">
-        <button
-          type="submit"
-          disabled={(isEditing ? updateTask.status : createTask.status) === 'pending'}
-        >
-          {(isEditing ? updateTask.status : createTask.status) === 'pending'
-            ? isEditing
-              ? 'Updating...'
-              : 'Creating...'
-            : isEditing
-              ? 'Update Task'
-              : 'Create Task'}
+        <button type="submit" disabled={isPending}>
+          {buttonText}
         </button>
         <button type="button" className="cancel-button" onClick={onSuccess}>
           Cancel
